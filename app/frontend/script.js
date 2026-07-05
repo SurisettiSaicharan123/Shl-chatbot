@@ -36,7 +36,13 @@ async function sendMessage() {
             })
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
+
+        console.log(data);
 
         chatBox.innerHTML += `
             <div class="bot">
@@ -44,25 +50,23 @@ async function sendMessage() {
             </div>
         `;
 
-        if (data.recommendations.length > 0) {
+        if (data.recommendations && data.recommendations.length > 0) {
 
-            let html = "<ul>";
+            let html = "";
 
             data.recommendations.forEach(item => {
 
                 html += `
-                    <li>
-                        <b>${item.name}</b><br>
-                        ${item.test_type}<br>
+                    <div class="card">
+                        <h3>${item.name}</h3>
+                        <p>${item.test_type}</p>
                         <a href="${item.url}" target="_blank">
                             View Assessment
                         </a>
-                    </li><br>
+                    </div>
                 `;
 
             });
-
-            html += "</ul>";
 
             chatBox.innerHTML += html;
         }
@@ -77,8 +81,14 @@ async function sendMessage() {
     }
     catch(err){
 
-        console.log(err);
+        console.error(err);
 
+        chatBox.innerHTML += `
+            <div class="bot">
+                <p style="color:red;">
+                    ${err.message}
+                </p>
+            </div>
+        `;
     }
-
 }
